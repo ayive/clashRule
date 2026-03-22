@@ -1,4 +1,7 @@
 # 直连补充列表
+IP-CIDR,127.0.0.0/8,DIRECT,no-resolve
+IP-CIDR,::1/128,DIRECT,no-resolve
+DOMAIN,localhost,DIRECT
 
 # 域名后缀匹配
 DOMAIN-SUFFIX,baidu.com
