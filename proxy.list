@@ -1,4 +1,7 @@
 # 代理补充列表
+DOMAIN-SUFFIX,poki.com,REJECT
+DOMAIN-SUFFIX,poki-cdn.com,REJECT
+DOMAIN-SUFFIX,poki.io,REJECT
 
 # 域名后缀匹配
 
