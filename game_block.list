@@ -5,34 +5,35 @@ DOMAIN-SUFFIX,7k7k.com
 DOMAIN-SUFFIX,7k7kimg.cn
 DOMAIN-SUFFIX,2144.cn
 DOMAIN-SUFFIX,3366.com
-DOMAIN-SUFFIX,360.cn # 注意：360.cn 为360安全中心，其子域名 fun.360.cn 包含小游戏
-DOMAIN-SUFFIX,fun.360.cn # 仅精准拦截360小游戏
+DOMAIN-SUFFIX,360.cn
+DOMAIN-SUFFIX,fun.360.cn
 DOMAIN-SUFFIX,17yy.com
 DOMAIN-SUFFIX,u9time.com
 
 # ==================== 互联网巨头的内置/网页小游戏 ====================
-DOMAIN-SUFFIX,xiaoyouxi.qq.com# 微信小游戏官网及网页端入口
-DOMAIN-SUFFIX,game.open-douyin.com # 抖音小游戏开放平台/接口域名
-DOMAIN-SUFFIX,play.msn.com# MSN（微软）内置在线小游戏
+DOMAIN-SUFFIX,xiaoyouxi.qq.com
+DOMAIN-SUFFIX,game.open-douyin.com
+DOMAIN-SUFFIX,play.msn.com
 
 # ==================== 国外超大型 H5/网页游戏平台 ====================
-DOMAIN-SUFFIX,poki.com # 全球最大的小游戏网站 Poki
-DOMAIN-SUFFIX,poki-cn.com# Poki 中文站
-DOMAIN-SUFFIX,crazygames.com # 国外极热门 H5 游戏平台 CrazyGames
-DOMAIN-SUFFIX,miniclip.com # 经典小游戏老厂 Miniclip
-DOMAIN-SUFFIX,y8.com # Y8 小游戏平台
-DOMAIN-SUFFIX,kongregate.com # 经典网页独立游戏社区 Kongregate
-DOMAIN-SUFFIX,newgrounds.com # 经典 Flash/HTML5 创作者社区 Newgrounds
-DOMAIN-SUFFIX,armorgames.com # 经典独立页游平台 Armor Games
-DOMAIN-SUFFIX,coolmathgames.com # 备受海外学生喜爱的 Coolmath Games
-DOMAIN-SUFFIX,itch.io # 最大的独立游戏（包括大量网页/H5游戏）发布平台
-DOMAIN-SUFFIX,gamedistribution.com # 许多小游戏网站背后的游戏分发与加载源
+DOMAIN-SUFFIX,poki.com
+DOMAIN-SUFFIX,poki.io
+DOMAIN-SUFFIX,poki-cn.com
+DOMAIN-SUFFIX,crazygames.com
+DOMAIN-SUFFIX,miniclip.com
+DOMAIN-SUFFIX,y8.com
+DOMAIN-SUFFIX,kongregate.com
+DOMAIN-SUFFIX,newgrounds.com
+DOMAIN-SUFFIX,armorgames.com
+DOMAIN-SUFFIX,coolmathgames.com
+DOMAIN-SUFFIX,itch.io
+DOMAIN-SUFFIX,gamedistribution.com
 
 # ==================== 经典/复古/在线掌机模拟器 ====================
-DOMAIN-SUFFIX,dos.zone # 在线 DOS 游戏平台
-DOMAIN-SUFFIX,yikm.net # 小霸王其乐无穷（FC/红白机在线模拟器）
-DOMAIN-SUFFIX,nesbox.com # 在线复古游戏模拟器
-DOMAIN-SUFFIX,playclassic.games # 在线经典怀旧游戏平台
+DOMAIN-SUFFIX,dos.zone
+DOMAIN-SUFFIX,yikm.net
+DOMAIN-SUFFIX,nesbox.com
+DOMAIN-SUFFIX,playclassic.games
 
 # ==================== 关键词模糊匹配规则（天网防漏） ====================
 # 只要域名中含有这些关键词，Clash 会直接拦截（如 xxxx-xiaoyouxi.com）
