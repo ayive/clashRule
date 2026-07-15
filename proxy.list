@@ -1,7 +1,46 @@
 # 代理补充列表
-DOMAIN-SUFFIX,poki.com,REJECT
-DOMAIN-SUFFIX,poki-cdn.com,REJECT
-DOMAIN-SUFFIX,poki.io,REJECT
+DOMAIN-SUFFIX,4399.com,REJECT
+DOMAIN-SUFFIX,4399.cn,REJECT
+DOMAIN-SUFFIX,4399dm.com,REJECT
+DOMAIN-SUFFIX,7k7k.com,REJECT
+DOMAIN-SUFFIX,7k7kimg.cn,REJECT
+DOMAIN-SUFFIX,2144.cn,REJECT
+DOMAIN-SUFFIX,3366.com,REJECT
+DOMAIN-SUFFIX,360.cn,REJECT # 注意：360.cn 为360安全中心，其子域名 fun.360.cn 包含小游戏
+DOMAIN-SUFFIX,fun.360.cn,REJECT # 仅精准拦截360小游戏
+DOMAIN-SUFFIX,17yy.com,REJECT
+DOMAIN-SUFFIX,u9time.com,REJECT
+
+# ==================== 互联网巨头的内置/网页小游戏 ====================
+DOMAIN-SUFFIX,xiaoyouxi.qq.com,REJECT# 微信小游戏官网及网页端入口
+DOMAIN-SUFFIX,game.open-douyin.com,REJECT # 抖音小游戏开放平台/接口域名
+DOMAIN-SUFFIX,play.msn.com,REJECT# MSN（微软）内置在线小游戏
+
+# ==================== 国外超大型 H5/网页游戏平台 ====================
+DOMAIN-SUFFIX,poki.com,REJECT # 全球最大的小游戏网站 Poki
+DOMAIN-SUFFIX,poki-cn.com,REJECT# Poki 中文站
+DOMAIN-SUFFIX,crazygames.com,REJECT # 国外极热门 H5 游戏平台 CrazyGames
+DOMAIN-SUFFIX,miniclip.com,REJECT # 经典小游戏老厂 Miniclip
+DOMAIN-SUFFIX,y8.com,REJECT # Y8 小游戏平台
+DOMAIN-SUFFIX,kongregate.com,REJECT # 经典网页独立游戏社区 Kongregate
+DOMAIN-SUFFIX,newgrounds.com,REJECT # 经典 Flash/HTML5 创作者社区 Newgrounds
+DOMAIN-SUFFIX,armorgames.com,REJECT # 经典独立页游平台 Armor Games
+DOMAIN-SUFFIX,coolmathgames.com,REJECT # 备受海外学生喜爱的 Coolmath Games
+DOMAIN-SUFFIX,itch.io,REJECT # 最大的独立游戏（包括大量网页/H5游戏）发布平台
+DOMAIN-SUFFIX,gamedistribution.com,REJECT # 许多小游戏网站背后的游戏分发与加载源
+
+# ==================== 经典/复古/在线掌机模拟器 ====================
+DOMAIN-SUFFIX,dos.zone,REJECT # 在线 DOS 游戏平台
+DOMAIN-SUFFIX,yikm.net,REJECT # 小霸王其乐无穷（FC/红白机在线模拟器）
+DOMAIN-SUFFIX,nesbox.com,REJECT # 在线复古游戏模拟器
+DOMAIN-SUFFIX,playclassic.games,REJECT # 在线经典怀旧游戏平台
+
+# ==================== 关键词模糊匹配规则（天网防漏） ====================
+# 只要域名中含有这些关键词，Clash 会直接拦截（如 xxxx-xiaoyouxi.com）
+DOMAIN-KEYWORD,xiaoyouxi,REJECT
+DOMAIN-KEYWORD,mini-game,REJECT
+DOMAIN-KEYWORD,h5game,REJECT
+DOMAIN-KEYWORD,flashgame,REJECT
 
 # 域名后缀匹配
 
