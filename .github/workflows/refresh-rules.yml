@@ -78,24 +78,42 @@ jobs:
           CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           KV_NS: a1b17df9193a462a8ee4b37b61d5b2fd
         run: |
+          if [ -z "$CF_ACCOUNT_ID" ] || [ -z "$CF_API_TOKEN" ]; then
+            echo "missing CLOUDFLARE_ACCOUNT_ID or CLOUDFLARE_API_TOKEN secrets" >&2
+            exit 1
+          fi
+          failed=0
           put_kv() {
-            local key="$1" file="$2"
-            curl -s -X PUT "https://api.cloudflare.com/client/v4/accounts/$CF_ACCOUNT_ID/storage/kv/namespaces/$KV_NS/values/$key" \
+            local key="$1" file="$2" resp code ok
+            resp=$(curl -s -w "\n%{http_code}" -X PUT "https://api.cloudflare.com/client/v4/accounts/$CF_ACCOUNT_ID/storage/kv/namespaces/$KV_NS/values/$key" \
               -H "Authorization: Bearer $CF_API_TOKEN" \
               -H "Content-Type: text/yaml" \
-              --data-binary "@$file" -o /dev/null -w "KV $key: %{http_code}\n"
+              --data-binary "@$file")
+            code=$(echo "$resp" | tail -n1)
+            ok=$(echo "$resp" | grep -o '"success":true' || true)
+            echo "KV $key: HTTP $code"
+            if [ "${code:0:1}" != "2" ] || [ -z "$ok" ]; then
+              echo "KV upload failed for $key (HTTP $code)" >&2
+              return 1
+            fi
           }
           for f in clash/yu*.yaml; do
-            put_kv "$(basename "$f")" "$f"
+            put_kv "$(basename "$f")" "$f" || failed=1
           done
           declare -A BM=( [yu09]="OpenAI/OpenAI" [yu10]="Claude/Claude" [yu11]="Gemini/Gemini" [yu12]="Copilot/Copilot" [yu17]="GitHub/GitHub" )
           for k in "${!BM[@]}"; do
             if curl -s --max-time 60 "https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/${BM[$k]}.yaml" -o "/tmp/$k.yaml"; then
-              put_kv "$k.yaml" "/tmp/$k.yaml"
+              put_kv "$k.yaml" "/tmp/$k.yaml" || failed=1
             else
-              echo "fetch failed: $k"
+              echo "fetch failed: $k" >&2
+              failed=1
             fi
           done
+          if [ "$failed" != "0" ]; then
+            echo "one or more KV uploads failed" >&2
+            exit 1
+          fi
+          echo "KV sync OK"
 
       - name: Commit and push if changed
         run: |
