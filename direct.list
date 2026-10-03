@@ -1,7 +1,10 @@
-# 直连补充列表
-IP-CIDR,127.0.0.0/8,DIRECT,no-resolve
-IP-CIDR,::1/128,DIRECT,no-resolve
-DOMAIN,localhost,DIRECT
 
-# 域名后缀匹配
+# 直连补充列表
+
+# 本机及回环地址
+IP-CIDR,127.0.0.0/8,no-resolve
+IP-CIDR,::1/128,no-resolve
+DOMAIN,localhost
+
+# 国内常用域名
 DOMAIN-SUFFIX,baidu.com
