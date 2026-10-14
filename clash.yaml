@@ -1,0 +1,230 @@
+# AnyuClash — Mihomo (Clash) 配置 v2
+# 2026-10-14 重写，替代旧 YuRule 覆写（31 个 classical 规则集，含坏文件与超大文件）
+# 特点：规则走 geosite/geoip 二进制库（快、不卡）；节点含优选+家宽，一个订阅全包
+# 导入：Clash Party / Clash Verge 等 Mihomo 客户端直接导入本文件即可
+
+mixed-port: 7890
+allow-lan: false
+mode: rule
+log-level: info
+ipv6: false
+unified-delay: true
+tcp-concurrent: true
+
+geodata-mode: true
+geox-url:
+  geoip: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geoip.dat"
+  geosite: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geosite.dat"
+  mmdb: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/country.mmdb"
+geo-auto-update: true
+geo-update-interval: 24
+
+profile:
+  store-selected: true
+  store-fake-ip: true
+
+sniffer:
+  enable: true
+  sniff:
+    HTTP:
+      ports: [80, 8080-8880]
+      override-destination: true
+    TLS:
+      ports: [443, 8443]
+
+dns:
+  enable: true
+  ipv6: false
+  respect-rules: true
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+  fake-ip-filter:
+    - "*.lan"
+    - "*.local"
+    - "localhost"
+    - "+.msftconnecttest.com"
+    - "+.msftncsi.com"
+    - "localhost.ptlogin2.qq.com"
+    - "time.*.com"
+    - "ntp.*.com"
+    - "+.pool.ntp.org"
+  default-nameserver:
+    - 223.5.5.5
+    - 119.29.29.29
+  nameserver:
+    - "https://dns.alidns.com/dns-query"
+    - "https://doh.pub/dns-query"
+  proxy-server-nameserver:
+    - "https://dns.alidns.com/dns-query"
+    - "https://doh.pub/dns-query"
+  direct-nameserver:
+    - "https://dns.alidns.com/dns-query"
+    - "https://doh.pub/dns-query"
+  nameserver-policy:
+    "geosite:private":
+      - "https://dns.alidns.com/dns-query"
+    "geosite:geolocation-cn":
+      - "https://dns.alidns.com/dns-query"
+      - "https://doh.pub/dns-query"
+    "geosite:geolocation-!cn":
+      - "https://1.1.1.1/dns-query"
+      - "https://8.8.8.8/dns-query"
+
+proxy-providers:
+  all:
+    type: http
+    url: "https://emiz.dpdns.org/admin197011/sub?target=vg"
+    path: ./providers/all.yaml
+    interval: 3600
+    health-check:
+      enable: true
+      url: "https://www.gstatic.com/generate_204"
+      interval: 300
+      timeout: 5000
+      lazy: true
+
+proxy-groups:
+  - name: 🚀 节点选择
+    type: select
+    proxies: [⚡️ 自动优选, 🏠 家宽节点, 🪬 手动切换, DIRECT]
+  - name: ⚡️ 自动优选
+    type: url-test
+    use: [all]
+    exclude-filter: "家宽|IPv6"
+    url: "https://www.gstatic.com/generate_204"
+    interval: 300
+    tolerance: 50
+  - name: 🏠 家宽节点
+    type: select
+    use: [all]
+    filter: "家宽"
+  - name: 🪬 手动切换
+    type: select
+    use: [all]
+  - name: 🤖 AI
+    type: select
+    proxies: [🏠 家宽节点, 🚀 节点选择, 🪬 手动切换]
+  - name: 🪁 Google
+    type: select
+    proxies: [🚀 节点选择, 🪬 手动切换, DIRECT]
+  - name: 📹 YouTube
+    type: select
+    proxies: [🚀 节点选择, 🪬 手动切换, DIRECT]
+  - name: 🌍 国外媒体
+    type: select
+    proxies: [🚀 节点选择, 🪬 手动切换]
+  - name: 📲 Telegram
+    type: select
+    proxies: [🚀 节点选择, 🪬 手动切换]
+  - name: 👾 GitHub
+    type: select
+    proxies: [🚀 节点选择, 🪬 手动切换, DIRECT]
+  - name: 🪟 Microsoft
+    type: select
+    proxies: [🚀 节点选择, 🪬 手动切换, 🎯 全球直连]
+  - name: 🍎 Apple
+    type: select
+    proxies: [🎯 全球直连, 🚀 节点选择, 🪬 手动切换]
+  - name: 🎯 全球直连
+    type: select
+    proxies: [DIRECT, 🚀 节点选择, 🪬 手动切换]
+  - name: 🐟 漏网之鱼
+    type: select
+    proxies: [🚀 节点选择, 🏠 家宽节点, 🪬 手动切换, DIRECT]
+
+rules:
+  # ===== 本地 / 局域网 =====
+  - DOMAIN,localhost,DIRECT
+  - IP-CIDR,127.0.0.0/8,DIRECT,no-resolve
+  - IP-CIDR,::1/128,DIRECT,no-resolve
+  - GEOSITE,private,DIRECT
+  - IP-CIDR,10.0.0.0/8,DIRECT,no-resolve
+  - IP-CIDR,172.16.0.0/12,DIRECT,no-resolve
+  - IP-CIDR,192.168.0.0/16,DIRECT,no-resolve
+  # ===== 广告拦截 =====
+  - GEOSITE,category-ads-all,REJECT
+  # ===== 游戏屏蔽（网页小游戏，沿用旧名单） =====
+  - DOMAIN-SUFFIX,4399.com,REJECT
+  - DOMAIN-SUFFIX,4399.cn,REJECT
+  - DOMAIN-SUFFIX,4399dm.com,REJECT
+  - DOMAIN-SUFFIX,7k7k.com,REJECT
+  - DOMAIN-SUFFIX,7k7kimg.cn,REJECT
+  - DOMAIN-SUFFIX,7k7kjs.cn,REJECT
+  - DOMAIN-SUFFIX,fun.360.cn,REJECT
+  - DOMAIN-SUFFIX,2144.cn,REJECT
+  - DOMAIN-SUFFIX,3366.com,REJECT
+  - DOMAIN-SUFFIX,17yy.com,REJECT
+  - DOMAIN-SUFFIX,u9time.com,REJECT
+  - DOMAIN-SUFFIX,xiaoyouxi.qq.com,REJECT
+  - DOMAIN-SUFFIX,game.open-douyin.com,REJECT
+  - DOMAIN-SUFFIX,play.msn.com,REJECT
+  - DOMAIN-SUFFIX,poki.com,REJECT
+  - DOMAIN-SUFFIX,poki.io,REJECT
+  - DOMAIN-SUFFIX,poki-cn.com,REJECT
+  - DOMAIN-SUFFIX,crazygames.com,REJECT
+  - DOMAIN-SUFFIX,miniclip.com,REJECT
+  - DOMAIN-SUFFIX,y8.com,REJECT
+  - DOMAIN-SUFFIX,kongregate.com,REJECT
+  - DOMAIN-SUFFIX,newgrounds.com,REJECT
+  - DOMAIN-SUFFIX,armorgames.com,REJECT
+  - DOMAIN-SUFFIX,coolmathgames.com,REJECT
+  - DOMAIN-SUFFIX,itch.io,REJECT
+  - DOMAIN-SUFFIX,gamedistribution.com,REJECT
+  - DOMAIN-SUFFIX,dos.zone,REJECT
+  - DOMAIN-SUFFIX,yikm.net,REJECT
+  - DOMAIN-SUFFIX,nesbox.com,REJECT
+  - DOMAIN-SUFFIX,playclassic.games,REJECT
+  - DOMAIN-KEYWORD,xiaoyouxi,REJECT
+  - DOMAIN-KEYWORD,mini-game,REJECT
+  - DOMAIN-KEYWORD,h5game,REJECT
+  - DOMAIN-KEYWORD,flashgame,REJECT
+  # ===== 境外 DNS 走代理（防 DNS 泄漏） =====
+  - DOMAIN-SUFFIX,dns.google,🚀 节点选择
+  - DOMAIN-SUFFIX,cloudflare-dns.com,🚀 节点选择
+  - DOMAIN-SUFFIX,1dot1dot1dot1.cloudflare-dns.com,🚀 节点选择
+  - DOMAIN-SUFFIX,dot.sb,🚀 节点选择
+  - DOMAIN-SUFFIX,dns.umbrella.com,🚀 节点选择
+  - DOMAIN-SUFFIX,dns.quad9.net,🚀 节点选择
+  - DOMAIN-SUFFIX,doh.dns.sb,🚀 节点选择
+  - DOMAIN-SUFFIX,doh.opendns.com,🚀 节点选择
+  - DOMAIN-SUFFIX,hk-hkg.doh.sb,🚀 节点选择
+  - IP-CIDR,8.8.8.8/32,🚀 节点选择,no-resolve
+  - IP-CIDR,8.8.4.4/32,🚀 节点选择,no-resolve
+  - IP-CIDR,1.1.1.1/32,🚀 节点选择,no-resolve
+  - IP-CIDR,1.0.0.1/32,🚀 节点选择,no-resolve
+  - IP-CIDR,185.222.222.222/32,🚀 节点选择,no-resolve
+  - IP-CIDR,208.67.222.222/32,🚀 节点选择,no-resolve
+  - IP-CIDR,208.67.220.220/32,🚀 节点选择,no-resolve
+  # ===== AI（Gemini 等须在 Google 大类之前） =====
+  - DOMAIN-SUFFIX,gemini.google.com,🤖 AI
+  - DOMAIN-SUFFIX,aistudio.google.com,🤖 AI
+  - DOMAIN-SUFFIX,ai.google.dev,🤖 AI
+  - DOMAIN-SUFFIX,generativelanguage.googleapis.com,🤖 AI
+  - DOMAIN-SUFFIX,bard.google.com,🤖 AI
+  - DOMAIN-SUFFIX,deepmind.google,🤖 AI
+  - DOMAIN-SUFFIX,grok.com,🤖 AI
+  - DOMAIN-SUFFIX,x.ai,🤖 AI
+  - DOMAIN-SUFFIX,perplexity.ai,🤖 AI
+  - DOMAIN-SUFFIX,qwen.ai,🤖 AI
+  - DOMAIN-SUFFIX,zcode-ai.com,🤖 AI
+  - GEOSITE,openai,🤖 AI
+  - GEOSITE,anthropic,🤖 AI
+  # ===== 分流 =====
+  - GEOSITE,youtube,📹 YouTube
+  - GEOSITE,google,🪁 Google
+  - GEOSITE,telegram,📲 Telegram
+  - GEOSITE,github,👾 GitHub
+  - GEOSITE,microsoft,🪟 Microsoft
+  - GEOSITE,apple,🍎 Apple
+  - GEOSITE,netflix,🌍 国外媒体
+  - GEOSITE,disney,🌍 国外媒体
+  - GEOSITE,spotify,🌍 国外媒体
+  - GEOSITE,twitter,🌍 国外媒体
+  - GEOSITE,facebook,🌍 国外媒体
+  - GEOSITE,bilibili,🎯 全球直连
+  - DOMAIN-SUFFIX,baidu.com,🎯 全球直连
+  # ===== 兜底 =====
+  - GEOSITE,geolocation-cn,🎯 全球直连
+  - GEOIP,CN,🎯 全球直连
+  - GEOSITE,geolocation-!cn,🚀 节点选择
+  - MATCH,🐟 漏网之鱼
