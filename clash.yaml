@@ -1,7 +1,6 @@
-# YuRule — Mihomo (Clash) 配置
-# 2026-10-14 按 YuRule.ini 原样重做：策略组、规则集、顺序、来源与 INI 完全一致
-# 修的只是实现层：上游改走 jsdelivr（永远最新、无坏文件），自己的 4 个 list 内联进配置
-# 导入：Clash Party / Clash Verge 等 Mihomo 客户端直接导入本文件
+# Clash 配置（全新编写，2026-10-14）
+# 思路：规则全部走 Mihomo 原生 geosite/geoip 二进制库，每日自动更新，匹配快、不臃肿
+# 节点：优选 + 家宽一个订阅全包；AI 类服务默认走家宽（住宅 IP 兼容性最好）
 
 mixed-port: 7890
 allow-lan: false
@@ -10,6 +9,14 @@ log-level: info
 ipv6: false
 unified-delay: true
 tcp-concurrent: true
+
+geodata-mode: true
+geox-url:
+  geoip: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geoip.dat"
+  geosite: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geosite.dat"
+  mmdb: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/country.mmdb"
+geo-auto-update: true
+geo-update-interval: 24
 
 profile:
   store-selected: true
@@ -48,8 +55,19 @@ dns:
     - "https://doh.pub/dns-query"
   proxy-server-nameserver:
     - "https://dns.alidns.com/dns-query"
+    - "https://doh.pub/dns-query"
   direct-nameserver:
     - "https://dns.alidns.com/dns-query"
+    - "https://doh.pub/dns-query"
+  nameserver-policy:
+    "geosite:private":
+      - "https://dns.alidns.com/dns-query"
+    "geosite:geolocation-cn":
+      - "https://dns.alidns.com/dns-query"
+      - "https://doh.pub/dns-query"
+    "geosite:geolocation-!cn":
+      - "https://1.1.1.1/dns-query"
+      - "https://8.8.8.8/dns-query"
 
 proxy-providers:
   all:
@@ -64,456 +82,84 @@ proxy-providers:
       timeout: 5000
       lazy: true
 
-rule-providers:
-  lan:
-    type: http
-    behavior: classical
-    format: text
-    url: "https://cdn.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/LocalAreaNetwork.list"
-    path: ./rules/lan.list
-    interval: 86400
-  google-lj:
-    type: http
-    behavior: classical
-    format: text
-    url: "https://cdn.jsdelivr.net/gh/LingJingMaster/Shadowrocket-Rules@main/Google.list"
-    path: ./rules/google-lj.list
-    interval: 86400
-  google-bm:
-    type: http
-    behavior: classical
-    format: text
-    url: "https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Google/Google.list"
-    path: ./rules/google-bm.list
-    interval: 86400
-  block-httpdns:
-    type: http
-    behavior: classical
-    format: text
-    url: "https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Shadowrocket/BlockHttpDNS/BlockHttpDNS.list"
-    path: ./rules/block-httpdns.list
-    interval: 86400
-  ai-lj:
-    type: http
-    behavior: classical
-    format: text
-    url: "https://cdn.jsdelivr.net/gh/LingJingMaster/Shadowrocket-Rules@main/AI.list"
-    path: ./rules/ai-lj.list
-    interval: 86400
-  ai-acl:
-    type: http
-    behavior: classical
-    format: text
-    url: "https://cdn.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Ruleset/AI.list"
-    path: ./rules/ai-acl.list
-    interval: 86400
-  claude:
-    type: http
-    behavior: classical
-    format: yaml
-    url: "https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Claude/Claude.yaml"
-    path: ./rules/claude.yaml
-    interval: 86400
-  gemini:
-    type: http
-    behavior: classical
-    format: yaml
-    url: "https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Gemini/Gemini.yaml"
-    path: ./rules/gemini.yaml
-    interval: 86400
-  ban-program-ad:
-    type: http
-    behavior: classical
-    format: text
-    url: "https://cdn.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/BanProgramAD.list"
-    path: ./rules/ban-program-ad.list
-    interval: 86400
-  ban-easy-privacy:
-    type: http
-    behavior: classical
-    format: text
-    url: "https://cdn.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/BanEasyPrivacy.list"
-    path: ./rules/ban-easy-privacy.list
-    interval: 86400
-  github-list:
-    type: http
-    behavior: classical
-    format: text
-    url: "https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/GitHub/GitHub.list"
-    path: ./rules/github-list.list
-    interval: 86400
-  github-yaml:
-    type: http
-    behavior: classical
-    format: yaml
-    url: "https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/GitHub/GitHub.yaml"
-    path: ./rules/github-yaml.yaml
-    interval: 86400
-  bing:
-    type: http
-    behavior: classical
-    format: text
-    url: "https://cdn.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Bing.list"
-    path: ./rules/bing.list
-    interval: 86400
-  microsoft:
-    type: http
-    behavior: classical
-    format: text
-    url: "https://cdn.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Microsoft.list"
-    path: ./rules/microsoft.list
-    interval: 86400
-  apple:
-    type: http
-    behavior: classical
-    format: text
-    url: "https://cdn.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Apple.list"
-    path: ./rules/apple.list
-    interval: 86400
-  speedtest:
-    type: http
-    behavior: classical
-    format: text
-    url: "https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Speedtest/Speedtest.list"
-    path: ./rules/speedtest.list
-    interval: 86400
-  youtube:
-    type: http
-    behavior: classical
-    format: text
-    url: "https://cdn.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Ruleset/YouTube.list"
-    path: ./rules/youtube.list
-    interval: 86400
-  china-media:
-    type: http
-    behavior: classical
-    format: text
-    url: "https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/ChinaMedia/ChinaMedia.list"
-    path: ./rules/china-media.list
-    interval: 86400
-  proxy-media:
-    type: http
-    behavior: classical
-    format: text
-    url: "https://cdn.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/ProxyMedia.list"
-    path: ./rules/proxy-media.list
-    interval: 86400
-  proxy-gfwlist:
-    type: http
-    behavior: classical
-    format: text
-    url: "https://cdn.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/ProxyGFWlist.list"
-    path: ./rules/proxy-gfwlist.list
-    interval: 86400
-  china-domain:
-    type: http
-    behavior: classical
-    format: text
-    url: "https://cdn.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/ChinaDomain.list"
-    path: ./rules/china-domain.list
-    interval: 86400
-  china-company-ip:
-    type: http
-    behavior: classical
-    format: text
-    url: "https://cdn.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/ChinaCompanyIp.list"
-    path: ./rules/china-company-ip.list
-    interval: 86400
-  download:
-    type: http
-    behavior: classical
-    format: text
-    url: "https://cdn.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Download.list"
-    path: ./rules/download.list
-    interval: 86400
-  china-bm:
-    type: http
-    behavior: classical
-    format: text
-    url: "https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/China/China.list"
-    path: ./rules/china-bm.list
-    interval: 86400
-
 proxy-groups:
   - name: 🚀 节点选择
     type: select
-    proxies: [🪬 手动切换, DIRECT]
+    proxies: [⚡️ 自动优选, 🏠 家宽节点, 🪬 手动切换, DIRECT]
+  - name: ⚡️ 自动优选
+    type: url-test
+    use: [all]
+    exclude-filter: "家宽|IPv6"
+    url: "https://www.gstatic.com/generate_204"
+    interval: 300
+    tolerance: 50
+  - name: 🏠 家宽节点
+    type: select
+    use: [all]
+    filter: "家宽"
   - name: 🪬 手动切换
     type: select
     use: [all]
+  - name: 🤖 AI
+    type: select
+    proxies: [🏠 家宽节点, 🚀 节点选择, 🪬 手动切换]
   - name: 🪁 Google
     type: select
     proxies: [🚀 节点选择, 🪬 手动切换, DIRECT]
-  - name: 📹 YouTube
+  - name: 📺 流媒体
     type: select
-    proxies: [🚀 节点选择, 🪬 手动切换, DIRECT]
-  - name: 🤖 AI
-    type: select
-    proxies: [🚀 节点选择, 🪬 手动切换]
-  - name: 💧 Copilot
-    type: select
-    proxies: [🚀 节点选择, 🪬 手动切换]
-  - name: 🪟 Microsoft
-    type: select
-    proxies: [🚀 节点选择, 🪬 手动切换, DIRECT]
-  - name: 👾 GitHub
-    type: select
-    proxies: [🚀 节点选择, 🪬 手动切换, DIRECT]
-  - name: 🍎 Apple
-    type: select
-    proxies: [DIRECT, 🪬 手动切换, 🚀 节点选择]
-  - name: ♻️ Speedtest
-    type: select
-    proxies: [DIRECT, 🪬 手动切换, 🚀 节点选择]
+    proxies: [🚀 节点选择, 🏠 家宽节点, 🪬 手动切换]
   - name: 📲 Telegram
     type: select
     proxies: [🚀 节点选择, 🪬 手动切换]
-  - name: 🌍 国外媒体
+  - name: 👾 GitHub
     type: select
-    proxies: [🚀 节点选择, 🪬 手动切换]
-  - name: 🎞️ 国内媒体
-    type: select
-    proxies: [DIRECT, 🚀 节点选择, 🪬 手动切换]
+    proxies: [🚀 节点选择, 🪬 手动切换, DIRECT]
   - name: 🎯 全球直连
     type: select
     proxies: [DIRECT, 🚀 节点选择, 🪬 手动切换]
-  - name: 🏷️ 游戏屏蔽
-    type: select
-    proxies: [REJECT, DIRECT]
-  - name: 🍃 应用净化
-    type: select
-    proxies: [REJECT, DIRECT]
-  - name: 🧱 DNS 防泄露
-    type: select
-    proxies: [REJECT, DIRECT]
-  - name: 🛡️ 隐私防护
-    type: select
-    proxies: [REJECT, DIRECT]
   - name: 🐟 漏网之鱼
     type: select
-    proxies: [DIRECT, 🚀 节点选择, 🪬 手动切换]
+    proxies: [🚀 节点选择, 🏠 家宽节点, 🪬 手动切换, DIRECT]
 
 rules:
-  # ===== 🏷️ 游戏屏蔽（自有 game_block.list 内联） =====
-  - DOMAIN-SUFFIX,4399.com,🏷️ 游戏屏蔽
-  - DOMAIN-SUFFIX,4399.cn,🏷️ 游戏屏蔽
-  - DOMAIN-SUFFIX,4399dm.com,🏷️ 游戏屏蔽
-  - DOMAIN-SUFFIX,7k7k.com,🏷️ 游戏屏蔽
-  - DOMAIN-SUFFIX,7k7kimg.cn,🏷️ 游戏屏蔽
-  - DOMAIN-SUFFIX,7k7kjs.cn,🏷️ 游戏屏蔽
-  - DOMAIN-SUFFIX,fun.360.cn,🏷️ 游戏屏蔽
-  - DOMAIN-SUFFIX,2144.cn,🏷️ 游戏屏蔽
-  - DOMAIN-SUFFIX,3366.com,🏷️ 游戏屏蔽
-  - DOMAIN-SUFFIX,17yy.com,🏷️ 游戏屏蔽
-  - DOMAIN-SUFFIX,u9time.com,🏷️ 游戏屏蔽
-  - DOMAIN-SUFFIX,xiaoyouxi.qq.com,🏷️ 游戏屏蔽
-  - DOMAIN-SUFFIX,game.open-douyin.com,🏷️ 游戏屏蔽
-  - DOMAIN-SUFFIX,play.msn.com,🏷️ 游戏屏蔽
-  - DOMAIN-SUFFIX,poki.com,🏷️ 游戏屏蔽
-  - DOMAIN-SUFFIX,poki.io,🏷️ 游戏屏蔽
-  - DOMAIN-SUFFIX,poki-cn.com,🏷️ 游戏屏蔽
-  - DOMAIN-SUFFIX,crazygames.com,🏷️ 游戏屏蔽
-  - DOMAIN-SUFFIX,miniclip.com,🏷️ 游戏屏蔽
-  - DOMAIN-SUFFIX,y8.com,🏷️ 游戏屏蔽
-  - DOMAIN-SUFFIX,kongregate.com,🏷️ 游戏屏蔽
-  - DOMAIN-SUFFIX,newgrounds.com,🏷️ 游戏屏蔽
-  - DOMAIN-SUFFIX,armorgames.com,🏷️ 游戏屏蔽
-  - DOMAIN-SUFFIX,coolmathgames.com,🏷️ 游戏屏蔽
-  - DOMAIN-SUFFIX,itch.io,🏷️ 游戏屏蔽
-  - DOMAIN-SUFFIX,gamedistribution.com,🏷️ 游戏屏蔽
-  - DOMAIN-SUFFIX,dos.zone,🏷️ 游戏屏蔽
-  - DOMAIN-SUFFIX,yikm.net,🏷️ 游戏屏蔽
-  - DOMAIN-SUFFIX,nesbox.com,🏷️ 游戏屏蔽
-  - DOMAIN-SUFFIX,playclassic.games,🏷️ 游戏屏蔽
-  - DOMAIN-KEYWORD,xiaoyouxi,🏷️ 游戏屏蔽
-  - DOMAIN-KEYWORD,mini-game,🏷️ 游戏屏蔽
-  - DOMAIN-KEYWORD,h5game,🏷️ 游戏屏蔽
-  - DOMAIN-KEYWORD,flashgame,🏷️ 游戏屏蔽
-  # ===== 🤖 AI =====
-  - DOMAIN-SUFFIX,zcode-ai.com,🤖 AI
-  # ===== 🚀 节点选择（自有 proxy.list 内联：境外 DNS） =====
-  - DOMAIN-SUFFIX,dns.google,🚀 节点选择
-  - DOMAIN-SUFFIX,cloudflare-dns.com,🚀 节点选择
-  - DOMAIN-SUFFIX,1dot1dot1dot1.cloudflare-dns.com,🚀 节点选择
-  - DOMAIN-SUFFIX,dot.sb,🚀 节点选择
-  - DOMAIN-SUFFIX,dns.umbrella.com,🚀 节点选择
-  - DOMAIN-SUFFIX,dns.quad9.net,🚀 节点选择
-  - DOMAIN-SUFFIX,doh.dns.sb,🚀 节点选择
-  - DOMAIN-SUFFIX,doh.opendns.com,🚀 节点选择
-  - DOMAIN-SUFFIX,hk-hkg.doh.sb,🚀 节点选择
-  - IP-CIDR,8.8.8.8/32,🚀 节点选择,no-resolve
-  - IP-CIDR,8.8.4.4/32,🚀 节点选择,no-resolve
-  - IP-CIDR,1.1.1.1/32,🚀 节点选择,no-resolve
-  - IP-CIDR,1.0.0.1/32,🚀 节点选择,no-resolve
-  - IP-CIDR,185.222.222.222/32,🚀 节点选择,no-resolve
-  - IP-CIDR,208.67.222.222/32,🚀 节点选择,no-resolve
-  - IP-CIDR,208.67.220.220/32,🚀 节点选择,no-resolve
-  # ===== 🎯 全球直连（自有 direct.list 内联） =====
-  - IP-CIDR,127.0.0.0/8,🎯 全球直连,no-resolve
-  - IP-CIDR,::1/128,🎯 全球直连,no-resolve
-  - DOMAIN,localhost,🎯 全球直连
-  - DOMAIN-SUFFIX,baidu.com,🎯 全球直连
-  - RULE-SET,lan,🎯 全球直连
-  # ===== 🪁 Google =====
-  - RULE-SET,google-lj,🪁 Google
-  - RULE-SET,google-bm,🪁 Google
-  # ===== 🧱 DNS 防泄露 =====
-  - RULE-SET,block-httpdns,🧱 DNS 防泄露
-  # ===== 🤖 AI（规则集） =====
-  - RULE-SET,ai-lj,🤖 AI
-  - RULE-SET,ai-acl,🤖 AI
-  # OpenAI（上游含 IP-ASN，Mihomo 规则集不支持，故剔除该类行后内联，源：blackmatrix7 OpenAI.yaml）
-  - DOMAIN,browser-intake-datadoghq.com,🤖 AI
-  - DOMAIN,chat.openai.com.cdn.cloudflare.net,🤖 AI
-  - DOMAIN,openai-api.arkoselabs.com,🤖 AI
-  - DOMAIN,openaicom-api-bdcpf8c6d2e9atf6.z01.azurefd.net,🤖 AI
-  - DOMAIN,openaicomproductionae4b.blob.core.windows.net,🤖 AI
-  - DOMAIN,production-openaicom-storage.azureedge.net,🤖 AI
-  - DOMAIN,static.cloudflareinsights.com,🤖 AI
-  - DOMAIN-SUFFIX,ai.com,🤖 AI
-  - DOMAIN-SUFFIX,algolia.net,🤖 AI
-  - DOMAIN-SUFFIX,api.statsig.com,🤖 AI
-  - DOMAIN-SUFFIX,auth0.com,🤖 AI
-  - DOMAIN-SUFFIX,chatgpt.com,🤖 AI
-  - DOMAIN-SUFFIX,chatgpt.livekit.cloud,🤖 AI
-  - DOMAIN-SUFFIX,client-api.arkoselabs.com,🤖 AI
-  - DOMAIN-SUFFIX,events.statsigapi.net,🤖 AI
-  - DOMAIN-SUFFIX,featuregates.org,🤖 AI
-  - DOMAIN-SUFFIX,host.livekit.cloud,🤖 AI
-  - DOMAIN-SUFFIX,identrust.com,🤖 AI
-  - DOMAIN-SUFFIX,intercom.io,🤖 AI
-  - DOMAIN-SUFFIX,intercomcdn.com,🤖 AI
-  - DOMAIN-SUFFIX,launchdarkly.com,🤖 AI
-  - DOMAIN-SUFFIX,oaistatic.com,🤖 AI
-  - DOMAIN-SUFFIX,oaiusercontent.com,🤖 AI
-  - DOMAIN-SUFFIX,observeit.net,🤖 AI
-  - DOMAIN-SUFFIX,openai.com,🤖 AI
-  - DOMAIN-SUFFIX,openaiapi-site.azureedge.net,🤖 AI
-  - DOMAIN-SUFFIX,openaicom.imgix.net,🤖 AI
-  - DOMAIN-SUFFIX,segment.io,🤖 AI
-  - DOMAIN-SUFFIX,sentry.io,🤖 AI
-  - DOMAIN-SUFFIX,stripe.com,🤖 AI
-  - DOMAIN-SUFFIX,turn.livekit.cloud,🤖 AI
-  - DOMAIN-KEYWORD,openai,🤖 AI
-  - IP-CIDR,24.199.123.28/32,🤖 AI
-  - IP-CIDR,64.23.132.171/32,🤖 AI
-  - RULE-SET,claude,🤖 AI
-  - RULE-SET,gemini,🤖 AI
-  # Copilot（同上，源：blackmatrix7 Copilot.yaml，按 INI 归 🤖 AI 组）
-  - DOMAIN,api.msn.com,🤖 AI
-  - DOMAIN,api.statsig.com,🤖 AI
-  - DOMAIN,assets.msn.com,🤖 AI
-  - DOMAIN,browser-intake-datadoghq.com,🤖 AI
-  - DOMAIN,chat.openai.com.cdn.cloudflare.net,🤖 AI
-  - DOMAIN,copilot.microsoft.com,🤖 AI
-  - DOMAIN,gateway.bingviz.microsoft.net,🤖 AI
-  - DOMAIN,gateway.bingviz.microsoftapp.net,🤖 AI
-  - DOMAIN,in.appcenter.ms,🤖 AI
-  - DOMAIN,location.microsoft.com,🤖 AI
-  - DOMAIN,odc.officeapps.live.com,🤖 AI
-  - DOMAIN,openai-api.arkoselabs.com,🤖 AI
-  - DOMAIN,openaicomproductionae4b.blob.core.windows.net,🤖 AI
-  - DOMAIN,production-openaicom-storage.azureedge.net,🤖 AI
-  - DOMAIN,r.bing.com,🤖 AI
-  - DOMAIN,self.events.data.microsoft.com,🤖 AI
-  - DOMAIN,services.bingapis.com,🤖 AI
-  - DOMAIN,static.cloudflareinsights.com,🤖 AI
-  - DOMAIN,sydney.bing.com,🤖 AI
-  - DOMAIN,www.bing.com,🤖 AI
-  - DOMAIN-SUFFIX,algolia.net,🤖 AI
-  - DOMAIN-SUFFIX,api.microsoftapp.net,🤖 AI
-  - DOMAIN-SUFFIX,auth0.com,🤖 AI
-  - DOMAIN-SUFFIX,bing-shopping.microsoft-falcon.io,🤖 AI
-  - DOMAIN-SUFFIX,challenges.cloudflare.com,🤖 AI
-  - DOMAIN-SUFFIX,chatgpt.com,🤖 AI
-  - DOMAIN-SUFFIX,chatgpt.livekit.cloud,🤖 AI
-  - DOMAIN-SUFFIX,client-api.arkoselabs.com,🤖 AI
-  - DOMAIN-SUFFIX,edgeservices.bing.com,🤖 AI
-  - DOMAIN-SUFFIX,events.statsigapi.net,🤖 AI
-  - DOMAIN-SUFFIX,featuregates.org,🤖 AI
-  - DOMAIN-SUFFIX,host.livekit.cloud,🤖 AI
-  - DOMAIN-SUFFIX,identrust.com,🤖 AI
-  - DOMAIN-SUFFIX,intercom.io,🤖 AI
-  - DOMAIN-SUFFIX,intercomcdn.com,🤖 AI
-  - DOMAIN-SUFFIX,launchdarkly.com,🤖 AI
-  - DOMAIN-SUFFIX,oaistatic.com,🤖 AI
-  - DOMAIN-SUFFIX,oaiusercontent.com,🤖 AI
-  - DOMAIN-SUFFIX,observeit.net,🤖 AI
-  - DOMAIN-SUFFIX,openai.com,🤖 AI
-  - DOMAIN-SUFFIX,openaiapi-site.azureedge.net,🤖 AI
-  - DOMAIN-SUFFIX,openaicom.imgix.net,🤖 AI
-  - DOMAIN-SUFFIX,segment.io,🤖 AI
-  - DOMAIN-SUFFIX,sentry.io,🤖 AI
-  - DOMAIN-SUFFIX,stripe.com,🤖 AI
-  - DOMAIN-SUFFIX,turn.livekit.cloud,🤖 AI
-  - DOMAIN-KEYWORD,openaicom-api,🤖 AI
-  - IP-CIDR,24.199.123.28/32,🤖 AI
-  - IP-CIDR,64.23.132.171/32,🤖 AI
-  - DOMAIN-SUFFIX,qwen.ai,🤖 AI
-  # ===== 🍃 应用净化 / 🛡️ 隐私防护 =====
-  - RULE-SET,ban-program-ad,🍃 应用净化
-  - RULE-SET,ban-easy-privacy,🛡️ 隐私防护
-  # ===== 👾 GitHub =====
-  - RULE-SET,github-list,👾 GitHub
-  - RULE-SET,github-yaml,👾 GitHub
-  # ===== 💧 Copilot =====
-  - RULE-SET,bing,💧 Copilot
-  # ===== 🪟 Microsoft / 🍎 Apple / 📲 Telegram / ♻️ Speedtest / 📹 YouTube =====
-  - RULE-SET,microsoft,🪟 Microsoft
-  - RULE-SET,apple,🍎 Apple
-  # Telegram（上游含 IP-ASN，剔除后内联，源：blackmatrix7 Telegram.list）
-  - DOMAIN,api.imem.app,📲 Telegram
-  - DOMAIN,api.swiftgram.app,📲 Telegram
-  - DOMAIN-SUFFIX,cdn-telegram.org,📲 Telegram
-  - DOMAIN-SUFFIX,comments.app,📲 Telegram
-  - DOMAIN-SUFFIX,contest.com,📲 Telegram
-  - DOMAIN-SUFFIX,graph.org,📲 Telegram
-  - DOMAIN-SUFFIX,legra.ph,📲 Telegram
-  - DOMAIN-SUFFIX,mbrx.app,📲 Telegram
-  - DOMAIN-SUFFIX,quiz.directory,📲 Telegram
-  - DOMAIN-SUFFIX,stel.com,📲 Telegram
-  - DOMAIN-SUFFIX,t.me,📲 Telegram
-  - DOMAIN-SUFFIX,tdesktop.com,📲 Telegram
-  - DOMAIN-SUFFIX,telega.one,📲 Telegram
-  - DOMAIN-SUFFIX,telegra.ph,📲 Telegram
-  - DOMAIN-SUFFIX,telegram-cdn.org,📲 Telegram
-  - DOMAIN-SUFFIX,telegram.dog,📲 Telegram
-  - DOMAIN-SUFFIX,telegram.me,📲 Telegram
-  - DOMAIN-SUFFIX,telegram.org,📲 Telegram
-  - DOMAIN-SUFFIX,telegram.space,📲 Telegram
-  - DOMAIN-SUFFIX,telegramdownload.com,📲 Telegram
-  - DOMAIN-SUFFIX,telesco.pe,📲 Telegram
-  - DOMAIN-SUFFIX,tg.dev,📲 Telegram
-  - DOMAIN-SUFFIX,tx.me,📲 Telegram
-  - DOMAIN-SUFFIX,usercontent.dev,📲 Telegram
-  - DOMAIN-KEYWORD,nicegram,📲 Telegram
-  - IP-CIDR,109.239.140.0/24,📲 Telegram,no-resolve
-  - IP-CIDR,139.59.210.98/32,📲 Telegram,no-resolve
-  - IP-CIDR,149.154.160.0/20,📲 Telegram,no-resolve
-  - IP-CIDR,196.55.216.167/32,📲 Telegram,no-resolve
-  - IP-CIDR,5.28.192.0/18,📲 Telegram,no-resolve
-  - IP-CIDR,91.108.0.0/16,📲 Telegram,no-resolve
-  - IP-CIDR6,2001:67c:4e8::/48,📲 Telegram,no-resolve
-  - IP-CIDR6,2001:b28:f23c::/47,📲 Telegram,no-resolve
-  - IP-CIDR6,2001:b28:f23f::/48,📲 Telegram,no-resolve
-  - IP-CIDR6,2a0a:f280::/29,📲 Telegram,no-resolve
-  - PROCESS-NAME,Telegram.exe,📲 Telegram
-  - PROCESS-NAME,nekox.messenger,📲 Telegram
-  - PROCESS-NAME,org.telegram.messenger,📲 Telegram
-  - PROCESS-NAME,telegram-desktop,📲 Telegram
-  - PROCESS-NAME,tw.nekomimi.nekogram,📲 Telegram
-  - PROCESS-NAME,xyz.nextalone.nagram,📲 Telegram
-  - RULE-SET,speedtest,♻️ Speedtest
-  - RULE-SET,youtube,📹 YouTube
-  # ===== 🎞️ 国内媒体 / 🌍 国外媒体 =====
-  - RULE-SET,china-media,🎞️ 国内媒体
-  - RULE-SET,proxy-media,🌍 国外媒体
-  # ===== 🚀 节点选择（GFWList） =====
-  - RULE-SET,proxy-gfwlist,🚀 节点选择
-  # ===== 🎯 全球直连（国内） =====
-  - RULE-SET,china-domain,🎯 全球直连
-  - RULE-SET,china-company-ip,🎯 全球直连
-  - RULE-SET,download,🎯 全球直连
-  - RULE-SET,china-bm,🎯 全球直连
-  # ===== 🐟 漏网之鱼 =====
+  # ===== 本地 / 局域网直连 =====
+  - DOMAIN,localhost,DIRECT
+  - GEOSITE,private,DIRECT
+  - IP-CIDR,127.0.0.0/8,DIRECT,no-resolve
+  - IP-CIDR,::1/128,DIRECT,no-resolve
+  - IP-CIDR,10.0.0.0/8,DIRECT,no-resolve
+  - IP-CIDR,172.16.0.0/12,DIRECT,no-resolve
+  - IP-CIDR,192.168.0.0/16,DIRECT,no-resolve
+  # ===== 广告拦截 =====
+  - GEOSITE,category-ads-all,REJECT
+  # ===== AI（Gemini 域名须排在 Google 大类之前） =====
+  - DOMAIN-SUFFIX,gemini.google.com,🤖 AI
+  - DOMAIN-SUFFIX,aistudio.google.com,🤖 AI
+  - DOMAIN-SUFFIX,ai.google.dev,🤖 AI
+  - DOMAIN-SUFFIX,generativelanguage.googleapis.com,🤖 AI
+  - DOMAIN-SUFFIX,bard.google.com,🤖 AI
+  - DOMAIN-SUFFIX,deepmind.google,🤖 AI
+  - DOMAIN-SUFFIX,grok.com,🤖 AI
+  - DOMAIN-SUFFIX,x.ai,🤖 AI
+  - DOMAIN-SUFFIX,perplexity.ai,🤖 AI
+  - GEOSITE,openai,🤖 AI
+  - GEOSITE,anthropic,🤖 AI
+  # ===== 流媒体 / 社交 =====
+  - GEOSITE,youtube,📺 流媒体
+  - GEOSITE,netflix,📺 流媒体
+  - GEOSITE,disney,📺 流媒体
+  - GEOSITE,spotify,📺 流媒体
+  - GEOSITE,twitter,🚀 节点选择
+  - GEOSITE,facebook,🚀 节点选择
+  # ===== 常用服务 =====
+  - GEOSITE,google,🪁 Google
+  - GEOSITE,telegram,📲 Telegram
+  - GEOSITE,github,👾 GitHub
+  - GEOSITE,apple,🎯 全球直连
+  - GEOSITE,microsoft,🎯 全球直连
+  # ===== 兜底分流 =====
+  - GEOSITE,geolocation-cn,🎯 全球直连
+  - GEOIP,CN,🎯 全球直连
+  - GEOSITE,geolocation-!cn,🚀 节点选择
   - MATCH,🐟 漏网之鱼
