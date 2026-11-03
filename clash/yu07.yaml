@@ -44,8 +44,6 @@ payload:
   - 'DOMAIN,sydney.bing.com'
   - 'DOMAIN,www.bing.com'
   - 'DOMAIN-SUFFIX,githubcopilot.com'
-  - 'DOMAIN-SUFFIX,grok.com'
-  - 'DOMAIN-SUFFIX,x.ai'
   - 'DOMAIN-SUFFIX,openrouter.ai'
   - 'DOMAIN-SUFFIX,perplexity.ai'
   - 'DOMAIN-SUFFIX,pplx.ai'
