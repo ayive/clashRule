@@ -40,6 +40,7 @@ payload:
   - 'DOMAIN-SUFFIX,claudemcpclient.com'
   - 'DOMAIN-KEYWORD,claude'
   - 'DOMAIN-KEYWORD,anthropic'
+  - 'DOMAIN,http-intake.logs.us5.datadoghq.com'
   - 'DOMAIN,copilot.microsoft.com'
   - 'DOMAIN,sydney.bing.com'
   - 'DOMAIN,www.bing.com'
